@@ -1,7 +1,7 @@
 var TaskView = Backbone.View.extend({
     tagName: 'li',
     template: _.template(
-        '<span class="<% completed ? \'completed\' : \'\' %>">'
+        '<span class="<%= completed ? \'done\' : \'\' %>">'
             + '<%= title %>'
             + '</span>'
             + '<button class="complete">Complete</button>'
@@ -41,7 +41,7 @@ var AppView = Backbone.View.extend({
 
     initialize: function() {
         this.collection = new TaskList();
-        this.listenTo(this.collection, 'add', this.renderTask);
+        this.listenTo(this.collection, 'add', this.showTask);
         this.render();
     },
 
@@ -51,7 +51,7 @@ var AppView = Backbone.View.extend({
             <input type="text" id="txtTask" placeholder="Type a task">
             <button id="addBtn">Add</button>
             <h2>Task registered</h2>
-            <ul>id="taskList"</ul>
+            <ul id="taskList"></ul>
             `);
     },
 
@@ -73,7 +73,7 @@ var AppView = Backbone.View.extend({
     },
 
     showTask: function (task) {
-        var vista = new TaskView({ model: task });
+        var view = new TaskView({ model: task });
         this.$('#taskList').append(view.render().el);
     }
 });
