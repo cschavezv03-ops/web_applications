@@ -47,9 +47,18 @@ var AppView = Backbone.View.extend({
     },
 
     initialize: function() {
-        this.collection = new TaskList();
-        this.listenTo(this.collection, 'add', this.showTask);
-        this.render();
+    this.collection = new TaskList();
+
+    this.listenTo(this.collection, 'add', this.showTask);
+
+    this.listenTo(
+        this.collection,
+        'add remove change:completed',
+        this.updateCounter
+    );
+
+    this.render();
+    this.updateCounter();
     },
 
     render: function() {
@@ -63,6 +72,11 @@ var AppView = Backbone.View.extend({
             </select>
             <button id="addBtn">Add Task</button>
             <h2>Task registered</h2>
+            <div id="taskCounter">
+                <p>Total tasks: <span id="totalTasks">0</span></p>
+                <p>Completed: <span id="completedTasks">0</span></p>
+                <p>Pending: <span id="pendingTasks">0</span></p>
+            </div>
             <ul id="taskList"></ul>
             <button id="deleteCompleteBtn">Delete Completed</button>
             `);
@@ -98,5 +112,19 @@ var AppView = Backbone.View.extend({
     showTask: function (task) {
         var view = new TaskView({ model: task });
         this.$('#taskList').append(view.render().el);
-    }
+    },
+
+    updateCounter: function() {
+    var total = this.collection.length;
+
+    var completed = this.collection.where({
+        completed: true
+    }).length;
+
+    var pending = total - completed;
+
+    this.$('#totalTasks').text(total);
+    this.$('#completedTasks').text(completed);
+    this.$('#pendingTasks').text(pending);
+},
 });
