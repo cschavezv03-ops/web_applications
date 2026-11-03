@@ -1,15 +1,19 @@
 var TaskView = Backbone.View.extend({
     tagName: 'li',
     template: _.template(
-        '<span class="<%= completed ? \'done\' : \'\' %>">'
-            + '<%= title %>'
-            + '</span>'
-            + '<span>Priority: <%= priority %></span>'
-            + '<button class="complete">Complete</button>'
-            + '<button class="delete">Delete</button>'
-
+        '<div class="task-info">' +
+            '<span class="<%= completed ? "done" : "" %>">' +
+                '<%- title %>' +
+            '</span>' +
+            '<span class="priority priority-<%= priority.toLowerCase() %>">' +
+                '<%- priority %>' +
+            '</span>' +
+        '</div>' +
+        '<div class="task-actions">' +
+            '<button class="complete">Complete</button>' +
+            '<button class="delete">Delete</button>' +
+        '</div>'
     ),
-
     events: {
         'click .complete': 'completeTask',
         'click .delete': 'deleteTask'
@@ -38,7 +42,8 @@ var AppView = Backbone.View.extend({
     el: '#app',
 
     events: {
-        'click #addBtn': 'addTask'
+        'click #addBtn': 'addTask',
+        'click #deleteCompleteBtn': 'deleteCompletedTasks'
     },
 
     initialize: function() {
@@ -51,14 +56,15 @@ var AppView = Backbone.View.extend({
         this.$el.html(`
             <h1>Task List</h1>
             <input type="text" id="txtTask" placeholder="Type a task">
-            <button id="addBtn">Add</button>
             <select id="taskPriority">
                 <option value="low">Low</option>
                 <option value="medium" selected>Medium</option>
                 <option value="high">High</option>
             </select>
+            <button id="addBtn">Add Task</button>
             <h2>Task registered</h2>
             <ul id="taskList"></ul>
+            <button id="deleteCompleteBtn">Delete Completed</button>
             `);
     },
 
@@ -80,6 +86,13 @@ var AppView = Backbone.View.extend({
 
         this.collection.add(newTask);
         this.$('#txtTask').val('');
+    },
+
+    deleteCompletedTasks: function() {
+        var completedTasks = this.collection.where({ completed: true });
+        completedTasks.forEach(function(task) {
+            task.destroy();
+        });
     },
 
     showTask: function (task) {
