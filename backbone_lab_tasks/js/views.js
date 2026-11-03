@@ -4,8 +4,10 @@ var TaskView = Backbone.View.extend({
         '<span class="<%= completed ? \'done\' : \'\' %>">'
             + '<%= title %>'
             + '</span>'
+            + '<span>Priority: <%= priority %></span>'
             + '<button class="complete">Complete</button>'
             + '<button class="delete">Delete</button>'
+
     ),
 
     events: {
@@ -50,6 +52,11 @@ var AppView = Backbone.View.extend({
             <h1>Task List</h1>
             <input type="text" id="txtTask" placeholder="Type a task">
             <button id="addBtn">Add</button>
+            <select id="taskPriority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
             <h2>Task registered</h2>
             <ul id="taskList"></ul>
             `);
@@ -63,9 +70,12 @@ var AppView = Backbone.View.extend({
         return;
         }
 
+    var priority = this.$('#taskPriority').val();
+
         var newTask = new Task({
         title: title,
-        completed: false
+        completed: false,
+        priority: priority
         });
 
         this.collection.add(newTask);

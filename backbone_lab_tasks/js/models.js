@@ -1,7 +1,8 @@
 var Task = Backbone.Model.extend({
     defaults: {
         title: '',
-        completed: false
+        completed: false,
+        priority: 'medium'
     }
 });
 
