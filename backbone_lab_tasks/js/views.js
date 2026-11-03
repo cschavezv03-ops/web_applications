@@ -47,6 +47,7 @@ var AppView = Backbone.View.extend({
     },
 
     initialize: function() {
+    this.loadTasks();
     this.collection = new TaskList();
 
     this.listenTo(this.collection, 'add', this.showTask);
@@ -57,7 +58,14 @@ var AppView = Backbone.View.extend({
         this.updateCounter
     );
 
+    this.listenTo(
+        this.collection,
+        'add remove change:completed',
+        this.saveTasks
+    );
+
     this.render();
+    this.loadTasks();
     this.updateCounter();
     },
 
@@ -126,5 +134,23 @@ var AppView = Backbone.View.extend({
     this.$('#totalTasks').text(total);
     this.$('#completedTasks').text(completed);
     this.$('#pendingTasks').text(pending);
-},
+    },
+
+    saveTasks: function() {
+    var tasks = this.collection.toJSON();
+
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    },
+
+    loadTasks: function() {
+    var storedTasks = localStorage.getItem('tasks');
+
+    if (storedTasks) {
+        try {
+            this.collection.add(JSON.parse(storedTasks));
+        } catch (error) {
+            console.error('Error loading tasks:', error);
+        }
+    }
+    }
 });
